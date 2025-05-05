@@ -85,6 +85,14 @@
 
 #else // SPH_WC2
 
+#ifdef SPH_WC4
+
+#define DESNNGB 200          // SPH kernel weighted number of neighbours
+#define NNGBDEV 0.05         // error tolerance in SPH kernel weighted neighb.
+#define NGBMAX (DESNNGB * 8) // size of neighbour list
+
+#else // SPH_WC4
+
 #ifdef SPH_WC8
 
 #define DESNNGB 400          // SPH kernel weighted number of neighbours
@@ -117,6 +125,7 @@
 #endif // SPH_WC12
 #endif // SPH_WC10
 #endif // SPH_WC8
+#endif // SPH_WC4
 #endif // SPH_WC2
 #endif // SPH_CUBIC_SPLINE
 #endif // TWO_DIM

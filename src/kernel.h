@@ -14,6 +14,10 @@ float sph_kernel_WC2 ( const float r, const float h );
 float sph_kernel_derivative_WC2 ( const float r, const float h );
 double bias_correction_WC2 ( const float h );
 
+float sph_kernel_WC4 ( const float r, const float h );
+float sph_kernel_derivative_WC4 ( const float r, const float h );
+double bias_correction_WC4 ( const float h );
+
 float sph_kernel_WC6 ( const float r, const float h );
 float sph_kernel_derivative_WC6 ( const float r, const float h );
 double bias_correction_WC6 ( const float h );

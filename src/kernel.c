@@ -10,6 +10,9 @@ float sph_kernel(const float r, const float h)
 #ifdef SPH_WC2
     return sph_kernel_WC2(r, h);
 #else
+#ifdef SPH_WC4
+    return sph_kernel_WC4 ( r, h );
+#else
 #ifdef SPH_WC8
     return sph_kernel_WC8(r, h);
 #else
@@ -24,6 +27,7 @@ float sph_kernel(const float r, const float h)
 #endif // SPH_WC12
 #endif // SPH_WC10
 #endif // SPH_WC8
+#endif // SPH_WC4
 #endif // SPH_WC2
 #endif // SPH_CUBIC_SPLINE
 }
@@ -35,6 +39,9 @@ float sph_kernel_derivative(const float r, const float h)
 #else
 #ifdef SPH_WC2
     return sph_kernel_derivative_WC2(r, h);
+#else
+#ifdef SPH_WC4
+    return sph_kernel_derivative_WC4 ( r, h );
 #else
 #ifdef SPH_WC8
     return sph_kernel_derivative_WC8(r, h);
@@ -50,6 +57,7 @@ float sph_kernel_derivative(const float r, const float h)
 #endif // SPH_WC12
 #endif // SPH_WC10
 #endif // SPH_WC8
+#endif // SPH_WC4
 #endif // SPH_WC2
 #endif // SPH_CUBIC_SPLINE
 }
@@ -60,8 +68,12 @@ double bias_correction(const float h)
 #ifdef SPH_WC2
     return bias_correction_WC2(h);
 #else
+#ifdef SPH_WC4
+    return bias_correction_WC4 ( h );
+#else
     return bias_correction_WC6(h);
 #endif // SPH_WC2
+#endif // SPH_WC4
 #else
     return 0.0;
 #endif // SPH_CUBIC_SPLINE
@@ -199,6 +211,46 @@ double bias_correction_WC6(const float h)
 #endif //TWO_DIM
 }
 
+//
+// WC4
+//
+float sph_kernel_WC4(const float r, const float h)
+{
+    const double u = r / h;
+    const double t = 1 - u;
+
+#ifdef TWO_DIM
+    double norm = 9.0 / pi / p2(h);
+#else
+    double norm = 495.0 / (32 * pi) / p3(h);
+#endif //TWO_DIM
+
+    return norm * t * t * t * t * t * t * (1.0 + 6.0 * u + 35.0 / 3.0 * u*u);
+}
+
+float sph_kernel_derivative_WC4(const float r, const float h)
+{
+    const float u = r / h;
+    const double t = 1 - u;
+
+#ifdef TWO_DIM
+    double norm = 9.0 / pi / p2(h);
+#else
+    double norm = 495.0 / (32 * pi) / p3(h);
+#endif //TWO_DIM
+
+    return norm / h * t * t * t * t * t * (-280.0 / 3.0 * u*u - 56.0 / 3.0 * u );
+}
+
+double bias_correction_WC4(const float h)
+{
+#ifdef TWO_DIM
+    return 0.0;
+#else
+    return 0.01342 * pow(DESNNGB * 0.01, -1.579) * Problem.Mpart * sph_kernel_WC2(0, h);
+#endif //TWO_DIM
+}
+
 float sph_kernel_WC2(const float r, const float h)
 {
     const double u = r / h;
@@ -235,6 +287,7 @@ double bias_correction_WC2(const float h)
     return -0.0294 * pow(DESNNGB * 0.01, -0.977) * Problem.Mpart * sph_kernel_WC2(0, h);
 #endif //TWO_DIM
 }
+
 
 float sph_kernel_M4(const float r, const float h) // cubic spline
 {
